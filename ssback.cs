@@ -17,7 +17,7 @@ namespace SistemSolar
 
         public string Info()
         {
-            return $"Numele Sistemului solar: {NumeSistem},Steaua sistemului: {Soare}, Numarul Planetelor a sistemului: {NrPlanete}";
+            return $"Numele Sistemului solar: {NumeSistem},Steaua sistemului: {Soare}, Numarul Planetelor a sistemului: {NrPlanete} /n";
         }
     }
 }
