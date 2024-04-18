@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <LangVersion>9.0</LangVersion> <!-- Adăugat pentru a specifica versiunea limbajului C# -->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -43,10 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="backmenu.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="SistemSolar.cs" />
+    <Compile Include="SistemSolarManager.cs" />
     <Compile Include="menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ssback.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

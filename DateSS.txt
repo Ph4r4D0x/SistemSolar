@@ -1,0 +1,3 @@
+0: Sistem Solar, Soare, 8
+0: Sistem fara soare, black hole, 2
+1: Sistem proba, xpcs, 1

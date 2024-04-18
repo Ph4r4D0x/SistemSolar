@@ -91,10 +91,10 @@ namespace SistemSolar
 
             using (StreamWriter file = new StreamWriter(filePath, append: true))
             {
-                foreach (var sistema in sistemeSolare)
+                foreach (var sistem in sistemeSolare)
                 {
                     lastId++;
-                    file.WriteLine($"{lastId}: {sistema.NumeSistem}, {sistema.Soare}, {sistema.NrPlanete}");
+                    file.WriteLine($"{lastId}: {sistem.NumeSistem}, {sistem.Soare}, {sistem.NrPlanete}");
                 }
             }
 
