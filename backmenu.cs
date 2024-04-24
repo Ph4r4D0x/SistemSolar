@@ -73,8 +73,8 @@ namespace SistemSolar
 
         public void SalvareSistemeSolare()
         {
-            string filePath = "DateSS.txt";
-            int lastId = -1; 
+        string filepath = @"C:\Users\ACER\Desktop\PIU\SSIV\SistemSolar\bin\Debug\DateSS.txt";
+        int lastId = -1; 
 
             if (File.Exists(filePath))
             {
