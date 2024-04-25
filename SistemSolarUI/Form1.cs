@@ -8,27 +8,45 @@ namespace SistemSolarUI
     public partial class Form1 : Form
     {
         private ListView lvSistemeSolare;
+        private TextBox txtNumeSistem;
+        private TextBox txtNumeStea;
+        private TextBox txtNrPlanete;
+        private Button btnAdauga;
         private const string CALE_FISIER = @"C:\Users\ACER\Desktop\PIU\SSIV\SistemSolar\bin\Debug\DateSS.txt";
 
         public Form1()
         {
             InitializeComponent();
-            InitializeazaForma();
+            InitializeazaComponenteUI();
+            InitializeazaListView();
+            this.Load += Form1_Load;
         }
 
-        private void InitializeazaForma()
+        private void InitializeazaComponenteUI()
         {
-            this.Size = new Size(800, 450);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.Font = new Font("Arial", 9, FontStyle.Bold);
-            this.Text = "Informatii Sisteme Solare";
 
+            txtNumeSistem = new TextBox { Location = new Point(10, this.Height - 100), Width = 200 };
+            txtNumeStea = new TextBox { Location = new Point(220, this.Height - 100), Width = 200 };
+            txtNrPlanete = new TextBox { Location = new Point(430, this.Height - 100), Width = 200 };
+            
+            btnAdauga = new Button { Text = "Adauga Sistem Solar", Location = new Point(640, this.Height - 100), Width = 200 };
+            btnAdauga.Click += btnAdauga_Click;
+
+            Controls.Add(txtNumeSistem);
+            Controls.Add(txtNumeStea);
+            Controls.Add(txtNrPlanete);
+            Controls.Add(btnAdauga);
+        }
+
+        private void InitializeazaListView()
+        {
             lvSistemeSolare = new ListView
             {
+                Location = new Point(10, 10),
+                Size = new Size(this.Width - 20, this.Height - 130),
                 View = View.Details,
                 FullRowSelect = true,
                 GridLines = true,
-                Dock = DockStyle.Fill,
             };
 
             lvSistemeSolare.Columns.Add("ID", -2, HorizontalAlignment.Left);
@@ -36,8 +54,7 @@ namespace SistemSolarUI
             lvSistemeSolare.Columns.Add("Soare", -2, HorizontalAlignment.Left);
             lvSistemeSolare.Columns.Add("Nr. Planete", -2, HorizontalAlignment.Left);
 
-            this.Controls.Add(lvSistemeSolare);
-            this.Load += Form1_Load;
+            Controls.Add(lvSistemeSolare);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -47,7 +64,7 @@ namespace SistemSolarUI
 
         private void AfiseazaSistemeSolare()
         {
-            lvSistemeSolare.Items.Clear(); //
+            lvSistemeSolare.Items.Clear();
 
             if (!File.Exists(CALE_FISIER))
             {
@@ -73,17 +90,52 @@ namespace SistemSolarUI
                     dateSistem[i] = dateSistem[i].Trim();
                 }
 
-
                 if (dateSistem.Length == 3)
                 {
-                    var item = new ListViewItem(id);
-                    item.SubItems.Add(dateSistem[0]);
-                    item.SubItems.Add(dateSistem[1]);
-                    item.SubItems.Add(dateSistem[2]);
+                    ListViewItem item = new ListViewItem(new[] { id, dateSistem[0], dateSistem[1], dateSistem[2] });
                     lvSistemeSolare.Items.Add(item);
                 }
             }
         }
-    }
 
+        private void btnAdauga_Click(object sender, EventArgs e)
+        {
+            AdaugaSistemSolar();
+        }
+
+        private void AdaugaSistemSolar()
+        {
+            if (string.IsNullOrWhiteSpace(txtNumeSistem.Text) ||
+                string.IsNullOrWhiteSpace(txtNumeStea.Text) ||
+                string.IsNullOrWhiteSpace(txtNrPlanete.Text))
+            {
+                MessageBox.Show("Toate campurile trebuie completate.");
+                return;
+            }
+
+            if (!int.TryParse(txtNrPlanete.Text, out int nrPlanete) || nrPlanete < 0)
+            {
+                MessageBox.Show("Numarul de planete trebuie sa fie un numar inrtreg si pozitiv.");
+                return;
+            }
+
+            int idNou = lvSistemeSolare.Items.Count;
+            ListViewItem item = new ListViewItem(new[] { idNou.ToString(), txtNumeSistem.Text, txtNumeStea.Text, nrPlanete.ToString() });
+            lvSistemeSolare.Items.Add(item);
+
+            SalveazaSistemSolarInFisier(idNou, txtNumeSistem.Text, txtNumeStea.Text, nrPlanete);
+
+            txtNumeSistem.Clear();
+            txtNumeStea.Clear();
+            txtNrPlanete.Clear();
+        }
+
+        private void SalveazaSistemSolarInFisier(int id, string numeSistem, string numeStea, int nrPlanete)
+        {
+            using (StreamWriter sw = File.AppendText(CALE_FISIER))
+            {
+                sw.WriteLine($"{id}: {numeSistem}, {numeStea}, {nrPlanete}");
+            }
+        }
+    }
 }
