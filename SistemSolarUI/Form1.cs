@@ -22,21 +22,33 @@ namespace SistemSolarUI
             this.Load += Form1_Load;
         }
 
+        private Label lblEroare;
+
         private void InitializeazaComponenteUI()
         {
-
             txtNumeSistem = new TextBox { Location = new Point(10, this.Height - 100), Width = 200 };
             txtNumeStea = new TextBox { Location = new Point(220, this.Height - 100), Width = 200 };
             txtNrPlanete = new TextBox { Location = new Point(430, this.Height - 100), Width = 200 };
-            
+
             btnAdauga = new Button { Text = "Adauga Sistem Solar", Location = new Point(640, this.Height - 100), Width = 200 };
             btnAdauga.Click += btnAdauga_Click;
+
+            // Initializeaza label-ul pentru erori
+            lblEroare = new Label
+            {
+                Location = new Point(10, this.Height - 70),
+                Width = 830,
+                ForeColor = Color.Red,
+                Text = ""
+            };
 
             Controls.Add(txtNumeSistem);
             Controls.Add(txtNumeStea);
             Controls.Add(txtNrPlanete);
             Controls.Add(btnAdauga);
+            Controls.Add(lblEroare);
         }
+
 
         private void InitializeazaListView()
         {
@@ -105,17 +117,19 @@ namespace SistemSolarUI
 
         private void AdaugaSistemSolar()
         {
+            lblEroare.Text = "";
+
             if (string.IsNullOrWhiteSpace(txtNumeSistem.Text) ||
                 string.IsNullOrWhiteSpace(txtNumeStea.Text) ||
                 string.IsNullOrWhiteSpace(txtNrPlanete.Text))
             {
-                MessageBox.Show("Toate campurile trebuie completate.");
+                lblEroare.Text = "Toate campurile trebuie completate.";
                 return;
             }
 
             if (!int.TryParse(txtNrPlanete.Text, out int nrPlanete) || nrPlanete < 0)
             {
-                MessageBox.Show("Numarul de planete trebuie sa fie un numar inrtreg si pozitiv.");
+                lblEroare.Text = "Numarul de planete trebuie sa fie un numar intreg si pozitiv.";
                 return;
             }
 
@@ -129,6 +143,7 @@ namespace SistemSolarUI
             txtNumeStea.Clear();
             txtNrPlanete.Clear();
         }
+
 
         private void SalveazaSistemSolarInFisier(int id, string numeSistem, string numeStea, int nrPlanete)
         {
