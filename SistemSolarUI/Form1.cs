@@ -12,13 +12,18 @@ namespace SistemSolarUI
         private TextBox txtNumeStea;
         private TextBox txtNrPlanete;
         private Button btnAdauga;
-        private const string CALE_FISIER = @"C:\Users\ACER\Desktop\PIU\SSIV\SistemSolar\bin\Debug\DateSS.txt";
+        private const string CALE_FISIER = @"C:\Users\ACER\Desktop\Uni\PIU\SSIV\SistemSolar\bin\Debug\DateSS.txt";
+        private ListBox listBoxSisteme;
+        private ComboBox comboBoxSisteme;
+        private TextBox txtIdCautat;
+        private Button btnCauta;
 
         public Form1()
         {
             InitializeComponent();
             InitializeazaComponenteUI();
             InitializeazaListView();
+            this.AutoScroll = true;
             this.Load += Form1_Load;
         }
 
@@ -33,7 +38,7 @@ namespace SistemSolarUI
             btnAdauga = new Button { Text = "Adauga Sistem Solar", Location = new Point(640, this.Height - 100), Width = 200 };
             btnAdauga.Click += btnAdauga_Click;
 
-            // Initializeaza label-ul pentru erori
+            
             lblEroare = new Label
             {
                 Location = new Point(10, this.Height - 70),
@@ -42,11 +47,77 @@ namespace SistemSolarUI
                 Text = ""
             };
 
+            RadioButton radioButton1 = new RadioButton
+            {
+                Text = "Optiune 1",
+                Location = new Point(640, this.Height - 150),
+                AutoSize = true
+            };
+            radioButton1.CheckedChanged += RadioButton1_CheckedChanged;
+
+            
+            CheckBox checkBox1 = new CheckBox
+            {
+                Text = "Bifat",
+                Location = new Point(640, this.Height - 180),
+                AutoSize = true
+            };
+            checkBox1.CheckedChanged += CheckBox1_CheckedChanged;
+
+            listBoxSisteme = new ListBox
+            {
+                Location = new Point(10, 250),
+                Size = new Size(200, 100)
+            };
+
+            comboBoxSisteme = new ComboBox
+            {
+                Location = new Point(220, 250),
+                Size = new Size(200, 21),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+
+            txtIdCautat = new TextBox
+            {
+                Location = new Point(430, 250),
+                Width = 200
+            };
+            txtIdCautat.KeyDown += TxtIdCautat_KeyEnter;
+
+            btnCauta = new Button
+            {
+
+                Text = "Cauta dupa ID",
+                Location = new Point(640, 250),
+                Size = new Size(100, 23)
+            };
+            btnCauta.Click += BtnCauta_Click;
+
+            listBoxSisteme = new ListBox
+            {
+                Location = new Point(300, 100),
+                Size = new Size(200, 100),
+                ScrollAlwaysVisible = true  
+            };
+
+            comboBoxSisteme = new ComboBox
+            {
+                Location = new Point(220, 250),
+                Size = new Size(200, 21),
+                DropDownHeight = 106,  
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                IntegralHeight = false  
+            };
+
+            Controls.AddRange(new Control[] { listBoxSisteme, comboBoxSisteme, txtIdCautat, btnCauta });
+
             Controls.Add(txtNumeSistem);
             Controls.Add(txtNumeStea);
             Controls.Add(txtNrPlanete);
             Controls.Add(btnAdauga);
             Controls.Add(lblEroare);
+            Controls.Add(radioButton1);
+            Controls.Add(checkBox1);
         }
 
 
@@ -59,6 +130,7 @@ namespace SistemSolarUI
                 View = View.Details,
                 FullRowSelect = true,
                 GridLines = true,
+                Scrollable = true
             };
 
             lvSistemeSolare.Columns.Add("ID", -2, HorizontalAlignment.Left);
@@ -72,6 +144,7 @@ namespace SistemSolarUI
         private void Form1_Load(object sender, EventArgs e)
         {
             AfiseazaSistemeSolare();
+            IncarcaDateInListe();
         }
 
         private void AfiseazaSistemeSolare()
@@ -136,6 +209,8 @@ namespace SistemSolarUI
             int idNou = lvSistemeSolare.Items.Count;
             ListViewItem item = new ListViewItem(new[] { idNou.ToString(), txtNumeSistem.Text, txtNumeStea.Text, nrPlanete.ToString() });
             lvSistemeSolare.Items.Add(item);
+            listBoxSisteme.Items.Add($"{idNou}: {txtNumeSistem.Text}, {txtNumeStea.Text}, {nrPlanete}");
+            comboBoxSisteme.Items.Add($"{idNou}: {txtNumeSistem.Text}, {txtNumeStea.Text}, {nrPlanete}");
 
             SalveazaSistemSolarInFisier(idNou, txtNumeSistem.Text, txtNumeStea.Text, nrPlanete);
 
@@ -152,5 +227,76 @@ namespace SistemSolarUI
                 sw.WriteLine($"{id}: {numeSistem}, {numeStea}, {nrPlanete}");
             }
         }
+
+        private void RadioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (((RadioButton)sender).Checked)
+            {
+                lblEroare.Text = " 'Optiune 1' selectata.";
+            }
+        }
+
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (((CheckBox)sender).Checked)
+            {
+                lblEroare.Text = "este bifat.";
+            }
+            else
+            {
+                lblEroare.Text = "a fost debifat.";
+            }
+        }
+
+        private void BtnCauta_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(txtIdCautat.Text, out int idCautat))
+            {
+                MessageBox.Show("Introduceti un ID valid.");
+                return;
+            }
+
+            var liniiFisier = File.ReadAllLines(CALE_FISIER);
+            var linieGasita = liniiFisier.FirstOrDefault(linie => linie.StartsWith($"{idCautat}:"));
+
+            if (linieGasita != null)
+            {
+                listBoxSisteme.Items.Clear();
+                comboBoxSisteme.Items.Clear();
+
+                listBoxSisteme.Items.Add(linieGasita);
+                comboBoxSisteme.Items.Add(linieGasita);
+            }
+            else
+            {
+                MessageBox.Show("ID-ul introdus nu a fost gasit.");
+                listBoxSisteme.Items.Clear();
+                comboBoxSisteme.Items.Clear();
+            }
+        }
+
+        private void IncarcaDateInListe()
+        {
+            var liniiFisier = File.ReadAllLines(CALE_FISIER);
+            listBoxSisteme.Items.Clear();  
+            comboBoxSisteme.Items.Clear(); 
+
+            foreach (var linie in liniiFisier)
+            {
+                listBoxSisteme.Items.Add(linie);
+                comboBoxSisteme.Items.Add(linie);
+            }   
+        }
+
+        private void TxtIdCautat_KeyEnter(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                BtnCauta_Click(this, EventArgs.Empty); 
+                e.SuppressKeyPress = true; 
+            }
+        }
+
+
     }
 }
